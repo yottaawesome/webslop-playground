@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 600px; margin: 60px auto; padding: 0 1rem; }
+        .claim { background: #f0f0f0; padding: 8px 12px; border-radius: 4px; margin: 4px 0; }
+        button {
+            padding: 8px 16px; cursor: pointer; margin-top: 16px;
+            background: #c00; color: white; border: none; border-radius: 4px;
+        }
+        button:hover { background: #a00; }
+        .token-box {
+            margin-top: 1.5rem; padding: 12px; background: #f8f8f8;
+            border: 1px solid #ddd; border-radius: 4px; word-break: break-all;
+            font-family: monospace; font-size: 0.75rem; max-height: 120px; overflow-y: auto;
+        }
+        .token-box h4 { font-family: system-ui, sans-serif; margin-bottom: 6px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div id="content">Loading...</div>
+    <script>
+        const token = sessionStorage.getItem("jwt");
+        if (!token) {
+            window.location.href = "/login";
+        }
+
+        async function load() {
+            const res = await fetch("/api/me", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (res.status === 401) {
+                sessionStorage.removeItem("jwt");
+                window.location.href = "/login";
+                return;
+            }
+
+            const { name, role, department } = await res.json();
+
+            document.getElementById("content").innerHTML = `
+                <h1>Welcome, ${name}!</h1>
+                <h3>Your Claims</h3>
+                <div class="claim"><strong>Name:</strong> ${name}</div>
+                <div class="claim"><strong>Role:</strong> ${role}</div>
+                <div class="claim"><strong>Department:</strong> ${department}</div>
+                <button onclick="logout()">Logout</button>
+                <div class="token-box">
+                    <h4>JWT Token</h4>
+                    ${token}
+                </div>
+            `;
+        }
+
+        function logout() {
+            sessionStorage.removeItem("jwt");
+            window.location.href = "/login";
+        }
+
+        load();
+    </script>
+</body>
+</html>
