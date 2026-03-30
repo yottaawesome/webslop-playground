@@ -2,4 +2,4 @@
 
 ## Introduction
 
-A repo to hold various small web-based projects and experiments. This is a mix of hand-written and AI generated projects for study. This intended to be a mix of different technologies, like dotnet, NodeJS, Deno etc.
+A repo to hold various small web-based projects and experiments intended for my own study. This is a mix of hand-written and AI generated projects with a mix of different web technologies.
