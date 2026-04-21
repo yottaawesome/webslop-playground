@@ -1,0 +1,31 @@
+@*
+    Counter.razor — the canonical Blazor "Hello World": a single mutable int
+    and a click handler. Key takeaways:
+
+      • @page "/counter" makes this component routable at /counter.
+      • @rendermode InteractiveServer opts THIS PAGE into server interactivity.
+        Without it, the button would render as plain HTML and do nothing.
+      • @onclick wires up a DOM event to a C# method. Blazor automatically
+        calls StateHasChanged() after event handlers, so the UI re-renders
+        on its own.
+*@
+
+@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

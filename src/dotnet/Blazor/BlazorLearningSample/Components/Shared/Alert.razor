@@ -1,0 +1,72 @@
+@*
+    Alert.razor — a small reusable component demonstrating:
+
+    • [Parameter]        — scalar inputs passed from the parent.
+    • ChildContent       — a RenderFragment that lets the parent supply
+                           arbitrary markup for the body of the alert.
+    • EventCallback      — how child components raise events to their parent
+                           (e.g. "user dismissed this alert").
+
+    Usage from a parent:
+
+        <Alert Severity="AlertSeverity.Warning" Dismissible="true"
+               OnDismiss="HandleDismiss">
+            Something <strong>interesting</strong> happened.
+        </Alert>
+*@
+
+@if (visible)
+{
+    <div class="alert @CssClass" role="alert">
+        @*  @ChildContent is how we render whatever markup the parent nested
+            inside our <Alert>...</Alert> tag.                                *@
+        <span>@ChildContent</span>
+
+        @if (Dismissible)
+        {
+            <button type="button" class="btn-close float-end"
+                    aria-label="Close" @onclick="DismissAsync"></button>
+        }
+    </div>
+}
+
+@code {
+    // ──────────────────────────────────────────────────────────────────────
+    // Parameters are the "props" of Blazor. They MUST be public and decorated
+    // with [Parameter]. They're set by the framework whenever the parent
+    // re-renders.
+    // ──────────────────────────────────────────────────────────────────────
+
+    [Parameter] public AlertSeverity Severity { get; set; } = AlertSeverity.Info;
+
+    [Parameter] public bool Dismissible { get; set; }
+
+    /// <summary>The body of the alert — any markup the parent supplies.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Notifies the parent when the user clicks the dismiss button.
+    /// EventCallback is Blazor's preferred way to raise events because it
+    /// automatically calls StateHasChanged() on the parent.
+    /// </summary>
+    [Parameter] public EventCallback OnDismiss { get; set; }
+
+    private bool visible = true;
+
+    private string CssClass => Severity switch
+    {
+        AlertSeverity.Success => "alert-success",
+        AlertSeverity.Warning => "alert-warning",
+        AlertSeverity.Danger  => "alert-danger",
+        _                     => "alert-info"
+    };
+
+    private async Task DismissAsync()
+    {
+        visible = false;
+        // Always await an EventCallback; it handles both sync and async parents.
+        await OnDismiss.InvokeAsync();
+    }
+
+    public enum AlertSeverity { Info, Success, Warning, Danger }
+}

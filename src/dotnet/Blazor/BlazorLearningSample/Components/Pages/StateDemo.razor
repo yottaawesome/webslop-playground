@@ -1,0 +1,39 @@
+@page "/state"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject AppState State
+
+<PageTitle>App state</PageTitle>
+
+<h1>Shared app state</h1>
+
+<p>
+    Open this page in <strong>two browser tabs</strong>. Because
+    <code>AppState</code> is registered with <em>Scoped</em> lifetime (see
+    <code>Program.cs</code>), each tab has its own instance and its own count.
+    Switch it to <em>Singleton</em> to see all tabs share the state.
+</p>
+
+<p>Global count: <strong>@State.GlobalCount</strong></p>
+
+<button class="btn btn-primary" @onclick="State.Increment">Increment</button>
+<button class="btn btn-outline-secondary ms-2" @onclick="State.Reset">Reset</button>
+
+<p class="mt-3 text-muted small">
+    This component also demonstrates the pub/sub pattern: we subscribe to
+    <code>State.OnChange</code> in <code>OnInitialized</code> and unsubscribe
+    in <code>Dispose</code> — forgetting to unsubscribe is a common source of
+    memory leaks in Blazor apps.
+</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

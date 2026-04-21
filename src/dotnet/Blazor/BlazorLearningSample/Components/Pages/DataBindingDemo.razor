@@ -1,0 +1,75 @@
+@page "/binding"
+@rendermode InteractiveServer
+
+<PageTitle>Data binding</PageTitle>
+
+<h1>Data binding</h1>
+
+<p>
+    Blazor supports three flavours of binding:
+</p>
+
+<h3>1. One-way binding</h3>
+<p>
+    Any <code>@@expression</code> in markup is re-rendered whenever state
+    changes. There is no "watcher" to wire up — Blazor simply diffs the
+    output after each render.
+</p>
+<p>The time on the server is <strong>@DateTime.Now.ToLongTimeString()</strong>
+   (refresh the page to see it change).</p>
+
+<h3>2. Two-way binding with <code>@@bind</code></h3>
+<p>
+    <code>@@bind</code> is shorthand for "set this value + subscribe to the
+    element's change event". For an <code>&lt;input&gt;</code> the default
+    event is <em>onchange</em> (fires on blur). Add
+    <code>@@bind:event="oninput"</code> for live-as-you-type updates.
+</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label">Your name (onchange — press Tab):</label>
+        <input class="form-control" @bind="name" />
+        <p class="mt-2">Hello, <strong>@name</strong>!</p>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Live name (oninput):</label>
+        <input class="form-control" @bind="liveName" @bind:event="oninput" />
+        <p class="mt-2">Live: <strong>@liveName</strong></p>
+    </div>
+</div>
+
+<h3 class="mt-4">3. Binding with format &amp; conversions</h3>
+<p>
+    <code>@@bind:format</code> works for dates; Blazor automatically converts
+    between <code>string</code> and primitive types like <code>int</code> and
+    <code>decimal</code>. For custom types, use
+    <code>@@bind:get</code>/<code>@@bind:set</code> (see below).
+</p>
+
+<label class="form-label">Pick a date:</label>
+<input type="date" class="form-control" @bind="date" @bind:format="yyyy-MM-dd" />
+<p>Selected: @date.ToLongDateString()</p>
+
+<h3 class="mt-4">4. <code>@@bind:get</code> / <code>@@bind:set</code></h3>
+<p>
+    When you need to run custom logic on each change — validation,
+    transformation, side-effects — split the binding into a get and a set.
+</p>
+
+<label class="form-label">Uppercase-only field:</label>
+<input class="form-control"
+       @bind:get="upper"
+       @bind:set="SetUpper"
+       @bind:event="oninput" />
+<p>Value: <code>@upper</code></p>
+
+@code {
+    private string name = "world";
+    private string liveName = "";
+    private DateTime date = DateTime.Today;
+    private string upper = "";
+
+    private void SetUpper(string? value) => upper = (value ?? "").ToUpperInvariant();
+}

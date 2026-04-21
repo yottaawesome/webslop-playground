@@ -1,0 +1,54 @@
+@page "/parameters"
+@rendermode InteractiveServer
+
+<PageTitle>Parameters & child content</PageTitle>
+
+<h1>Parameters &amp; child content</h1>
+
+<p>
+    Components communicate with their parents through <code>[Parameter]</code>
+    properties. Rich content is passed via <code>RenderFragment</code>
+    parameters (the default one is <em>ChildContent</em>). Events flow back up
+    the tree via <code>EventCallback</code>.
+</p>
+
+@*
+    1. Scalar parameters (Name, Role, Bio) + attribute splatting (style=...).
+*@
+<h3>1. Reusable component with typed parameters</h3>
+<div class="d-flex gap-3 flex-wrap">
+    <UserCard Name="Ada Lovelace"
+              Role="Mathematician"
+              Bio="First computer programmer, arguably."
+              style="border-color: teal;" />
+
+    <UserCard Name="Grace Hopper"
+              Role="Rear Admiral / Compiler pioneer"
+              Bio="Coined the term 'debugging' after a literal moth." />
+</div>
+
+@*
+    2. ChildContent (a RenderFragment) lets the parent supply arbitrary markup.
+       The <Alert> component wraps whatever we put between its tags.
+*@
+<h3 class="mt-4">2. ChildContent + EventCallback</h3>
+
+<Alert Severity="Alert.AlertSeverity.Warning"
+       Dismissible="true"
+       OnDismiss="OnAlertDismissed">
+    This alert's body is a <strong>RenderFragment</strong>. Click the × to see
+    the child fire an <code>EventCallback</code> back up to this page.
+</Alert>
+
+<p><em>Status:</em> @status</p>
+
+@code {
+    private string status = "Alert visible.";
+
+    // The signature matches the child's EventCallback (no payload here).
+    // For a typed payload use EventCallback<T> on both sides.
+    private void OnAlertDismissed()
+    {
+        status = $"Parent was notified at {DateTime.Now:HH:mm:ss}.";
+    }
+}

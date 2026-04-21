@@ -1,0 +1,62 @@
+@*
+    RoutingDemo.razor — demonstrates route parameters & NavigationManager.
+
+    The @page directive supports:
+      • Multiple routes on one component.
+      • Typed route constraints (e.g. {id:int}).
+      • Optional parameters (e.g. {name?}).
+
+    NavigationManager is an injected service that lets you read the current
+    URI, listen for navigation events, and navigate programmatically.
+*@
+
+@page "/greet"
+@page "/greet/{Name}"
+@page "/greet/{Name}/{Times:int}"
+@rendermode InteractiveServer
+
+@inject NavigationManager Nav
+
+<PageTitle>Routing</PageTitle>
+
+<h1>Routing &amp; route parameters</h1>
+
+<p>Current URL: <code>@Nav.Uri</code></p>
+
+<p>
+    Matched parameters:
+    <code>Name = "@Name"</code>, <code>Times = @Times</code>.
+</p>
+
+@for (int i = 0; i < Times; i++)
+{
+    <p>👋 Hello, <strong>@Name</strong>!</p>
+}
+
+<h3 class="mt-3">Try different URLs</h3>
+<ul>
+    <li><a href="/greet">/greet</a> (no params → defaults)</li>
+    <li><a href="/greet/Ada">/greet/Ada</a></li>
+    <li><a href="/greet/Ada/3">/greet/Ada/3</a> (int route constraint)</li>
+</ul>
+
+<h3>Programmatic navigation</h3>
+<button class="btn btn-primary" @onclick="NavigateRandom">
+    Navigate to a random greeting
+</button>
+
+@code {
+    // Route parameter names match the {placeholder} in @page. They must be
+    // public properties with [Parameter].
+    [Parameter] public string Name { get; set; } = "stranger";
+    [Parameter] public int Times { get; set; } = 1;
+
+    private void NavigateRandom()
+    {
+        var names = new[] { "Ada", "Alan", "Grace", "Linus", "Margaret" };
+        var n = names[Random.Shared.Next(names.Length)];
+        // NavigateTo triggers the router; 'forceLoad: true' would cause a full
+        // page reload instead of a client-side navigation.
+        Nav.NavigateTo($"/greet/{n}/{Random.Shared.Next(1, 5)}");
+    }
+}

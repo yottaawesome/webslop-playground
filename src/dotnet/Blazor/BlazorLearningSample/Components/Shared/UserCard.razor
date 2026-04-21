@@ -1,0 +1,29 @@
+@*
+    UserCard.razor — demonstrates typed parameters + "attribute splatting".
+
+    Any HTML attributes on the parent tag that don't match a declared
+    [Parameter] are captured into <see cref="ExtraAttributes"/> and splatted
+    onto the root element via @attributes. This is how you build components
+    that feel "native" (supporting style=, class=, data-*=, etc.).
+*@
+
+<div class="card shadow-sm" @attributes="ExtraAttributes" style="max-width: 22rem;">
+    <div class="card-body">
+        <h5 class="card-title mb-1">@Name</h5>
+        <h6 class="card-subtitle text-muted mb-2">@Role</h6>
+        @if (!string.IsNullOrWhiteSpace(Bio))
+        {
+            <p class="card-text small">@Bio</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = default!;
+    [Parameter] public string Role { get; set; } = "Developer";
+    [Parameter] public string? Bio { get; set; }
+
+    // CaptureUnmatchedValues lets callers pass any extra HTML attribute.
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? ExtraAttributes { get; set; }
+}

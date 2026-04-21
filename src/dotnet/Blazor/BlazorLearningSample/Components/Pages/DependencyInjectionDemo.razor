@@ -1,0 +1,58 @@
+@page "/di"
+@rendermode InteractiveServer
+
+@*
+    Dependency injection in Blazor uses the standard ASP.NET Core container.
+    Register services in Program.cs; consume them with @inject (or
+    [Inject] on a property in code-behind). See Services/ and Program.cs.
+*@
+
+@inject IQuoteService Quotes
+@inject ILogger<DependencyInjectionDemo> Logger
+
+<PageTitle>Dependency injection</PageTitle>
+
+<h1>Dependency injection</h1>
+
+<p>
+    This page depends on <code>IQuoteService</code> (a custom service) and
+    <code>ILogger&lt;T&gt;</code> (provided by the framework). Both are
+    injected with a single <code>@@inject</code> directive.
+</p>
+
+<button class="btn btn-primary" @onclick="LoadQuoteAsync" disabled="@loading">
+    @(loading ? "Loading..." : "Get random quote")
+</button>
+
+@if (!string.IsNullOrEmpty(quote))
+{
+    <blockquote class="blockquote mt-3">
+        <p>@quote</p>
+    </blockquote>
+}
+
+<h3 class="mt-4">Service lifetimes recap</h3>
+<ul>
+    <li><strong>Singleton</strong> — one instance for the whole app (all users!).</li>
+    <li><strong>Scoped</strong> — one per Blazor circuit (≈ per browser tab).</li>
+    <li><strong>Transient</strong> — new instance each time it's resolved.</li>
+</ul>
+
+@code {
+    private string? quote;
+    private bool loading;
+
+    private async Task LoadQuoteAsync()
+    {
+        loading = true;
+        try
+        {
+            quote = await Quotes.GetRandomQuoteAsync();
+            Logger.LogInformation("Fetched quote of length {Length}", quote.Length);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

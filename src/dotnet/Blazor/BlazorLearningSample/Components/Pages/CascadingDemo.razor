@@ -1,0 +1,41 @@
+@page "/cascading"
+@rendermode InteractiveServer
+
+<PageTitle>Cascading values</PageTitle>
+
+<h1>Cascading values &amp; parameters</h1>
+
+<p>
+    <code>&lt;CascadingValue&gt;</code> pushes a value down to every descendant
+    component — no "prop drilling" required. Descendants receive it with
+    <code>[CascadingParameter]</code>. Great for themes, the current user,
+    tenant info, etc.
+</p>
+
+<div class="mb-3">
+    <label class="form-label">Theme:</label>
+    <select class="form-select w-auto d-inline-block" @bind="theme">
+        <option>light</option>
+        <option>dark</option>
+        <option>solarized</option>
+    </select>
+</div>
+
+@*
+    Everything nested inside the CascadingValue automatically receives "theme"
+    as a CascadingParameter matched by type (string). Use Name="..." to
+    disambiguate multiple cascaded values of the same type.
+*@
+<CascadingValue Value="theme" Name="Theme">
+    <div class="border rounded p-3">
+        <h4>Parent</h4>
+        <ThemedChild />
+        <div class="ms-3 border-start ps-3 mt-2">
+            <ThemedChild />
+        </div>
+    </div>
+</CascadingValue>
+
+@code {
+    private string theme = "light";
+}

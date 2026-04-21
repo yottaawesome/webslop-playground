@@ -1,0 +1,23 @@
+@*
+    CodeBehindDemo.razor — markup only. The logic lives in the partial class
+    CodeBehindDemo.razor.cs beside this file. Blazor will merge them at
+    compile time thanks to the "partial" modifier.
+
+    Use code-behind when:
+      • The logic is long enough to clutter the @code block.
+      • You want to unit-test the class without a renderer.
+      • You want a class that inherits from a base component (ComponentBase).
+*@
+
+@page "/codebehind"
+@rendermode InteractiveServer
+
+<PageTitle>Code-behind</PageTitle>
+
+<h1>Code-behind pattern</h1>
+
+<p>
+    Today's random lucky number is <strong>@lucky</strong>.
+</p>
+
+<button class="btn btn-primary" @onclick="Reroll">Reroll</button>

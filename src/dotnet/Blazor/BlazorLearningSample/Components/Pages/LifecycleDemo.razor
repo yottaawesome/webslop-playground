@@ -1,0 +1,80 @@
+@page "/lifecycle"
+@rendermode InteractiveServer
+@implements IDisposable
+
+<PageTitle>Lifecycle</PageTitle>
+
+<h1>Component lifecycle</h1>
+
+<p>
+    Blazor invokes these virtual methods in order. Sync and async versions
+    exist for each; the async one runs after the sync one.
+</p>
+
+<ol>
+    <li><code>SetParametersAsync</code> — raw parameter assignment. Rarely overridden.</li>
+    <li><code>OnInitialized</code> / <code>OnInitializedAsync</code> — once per component instance.</li>
+    <li><code>OnParametersSet</code> / <code>OnParametersSetAsync</code> — each time parameters change.</li>
+    <li><code>OnAfterRender(firstRender)</code> / <code>OnAfterRenderAsync</code> — after the DOM is updated. Safe for JS interop.</li>
+    <li><code>Dispose</code> — when the component is removed. Unsubscribe from events here.</li>
+</ol>
+
+<button class="btn btn-outline-secondary btn-sm" @onclick="() => counter++">
+    Re-render (counter = @counter)
+</button>
+
+<h4 class="mt-3">Log</h4>
+<pre class="bg-light p-2 small" style="max-height: 20rem; overflow: auto;">@string.Join('\n', log)</pre>
+
+@code {
+    private readonly List<string> log = [];
+    private int counter = 0;
+    private System.Timers.Timer? timer;
+
+    private void Log(string msg) => log.Add($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");
+
+    protected override void OnInitialized()
+    {
+        Log("OnInitialized — great spot to kick off synchronous setup.");
+
+        // Timers are a classic example of something that MUST be disposed.
+        timer = new System.Timers.Timer(2000);
+        timer.Elapsed += OnTick;
+        timer.Start();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Log("OnInitializedAsync — await async work (APIs, DB) here.");
+        await Task.Delay(50);
+    }
+
+    protected override void OnParametersSet()
+    {
+        Log("OnParametersSet — re-runs when a parent changes our parameters.");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Log($"OnAfterRender(firstRender={firstRender}) — DOM is in sync.");
+        // JS interop that touches the DOM is only safe from here onwards.
+    }
+
+    private void OnTick(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        Log("Timer tick (from background thread).");
+        // Always marshal back onto the renderer's sync context with
+        // InvokeAsync before calling StateHasChanged from a non-UI thread.
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Log("Dispose — released the timer.");
+        if (timer is not null)
+        {
+            timer.Elapsed -= OnTick;
+            timer.Dispose();
+        }
+    }
+}

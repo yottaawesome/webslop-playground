@@ -1,0 +1,19 @@
+@*
+    ThemedChild.razor — consumes a cascading "Theme" value from any ancestor.
+    Nothing wires up the value explicitly — the framework finds the nearest
+    <CascadingValue Name="Theme"> up the tree.
+*@
+
+<div class="badge text-bg-@BadgeClass">Theme is: @Theme</div>
+
+@code {
+    [CascadingParameter(Name = "Theme")]
+    public string Theme { get; set; } = "light";
+
+    private string BadgeClass => Theme switch
+    {
+        "dark"       => "dark",
+        "solarized"  => "warning",
+        _            => "info"
+    };
+}

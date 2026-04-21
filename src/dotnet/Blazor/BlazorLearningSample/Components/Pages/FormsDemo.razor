@@ -1,0 +1,91 @@
+@page "/forms"
+@rendermode InteractiveServer
+
+<PageTitle>Forms & validation</PageTitle>
+
+<h1>Forms &amp; validation</h1>
+
+<p>
+    <code>&lt;EditForm&gt;</code> binds to a <em>model</em> object and runs
+    validation through <code>&lt;DataAnnotationsValidator /&gt;</code>, which
+    reads <code>[Required]</code>, <code>[StringLength]</code>, etc. from the
+    model class (see <code>Models/ContactForm.cs</code>).
+</p>
+
+@*
+    EditForm defines an "edit context" for its descendants. Specialised input
+    components (InputText, InputNumber, InputSelect, etc.) automatically wire
+    up value + validation state — you do NOT need @bind on them.
+*@
+<EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" />
+
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <InputText class="form-control" @bind-Value="model.Name" />
+        <ValidationMessage For="() => model.Name" class="text-danger small" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" type="email" @bind-Value="model.Email" />
+        <ValidationMessage For="() => model.Email" class="text-danger small" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Age</label>
+        <InputNumber class="form-control" @bind-Value="model.Age" />
+        <ValidationMessage For="() => model.Age" class="text-danger small" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Topic</label>
+        <InputSelect class="form-select" @bind-Value="model.Topic">
+            <option>General</option>
+            <option>Billing</option>
+            <option>Support</option>
+            <option>Feedback</option>
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Message</label>
+        <InputTextArea class="form-control" rows="3" @bind-Value="model.Message" />
+        <ValidationMessage For="() => model.Message" class="text-danger small" />
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox class="form-check-input" @bind-Value="model.AcceptTerms" id="terms" />
+        <label class="form-check-label" for="terms">I accept the terms.</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@if (submitted)
+{
+    <Alert Severity="Alert.AlertSeverity.Success" Dismissible="true">
+        Thanks <strong>@model.Name</strong> — form accepted!
+    </Alert>
+}
+
+@code {
+    // [SupplyParameterFromForm] lets EditForm bind to this property across
+    // static server renders (form POSTs). Not strictly required under
+    // interactive server rendering but it's good practice.
+    // Under InteractiveServer rendering the form lives in a SignalR circuit,
+    // so we don't need [SupplyParameterFromForm] (which is for static SSR
+    // POSTs). A plain field is enough and survives re-renders.
+    private ContactForm model = new();
+
+    private bool submitted;
+
+    // Only fires when validation passes. Use OnInvalidSubmit for the opposite,
+    // or OnSubmit to handle both and decide yourself.
+    private void HandleValidSubmit()
+    {
+        submitted = true;
+        // In a real app: call a service, persist, redirect, etc.
+    }
+}

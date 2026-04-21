@@ -1,0 +1,68 @@
+@page "/"
+
+<PageTitle>Blazor Learning Sample</PageTitle>
+
+@*
+    Home.razor — landing page & "table of contents" for the learning demos.
+    This component uses ONLY static server-side rendering (no @rendermode
+    directive), so Blazor ships it as plain HTML with zero JS cost. Good
+    habit: only opt into interactivity where you actually need it.
+*@
+
+<h1>Blazor core concepts, by example</h1>
+
+<p class="lead">
+    Each page below demonstrates one of the fundamental building blocks of
+    Blazor. Open the corresponding <code>.razor</code> file alongside the
+    running page to see the code + comments.
+</p>
+
+<div class="row g-3">
+    @foreach (var demo in demos)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@demo.Title</h5>
+                    <p class="card-text small text-muted">@demo.Summary</p>
+                    <a class="btn btn-sm btn-primary" href="@demo.Href">Open</a>
+                    <code class="small text-muted ms-2">@demo.File</code>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    // A small in-file record to keep the markup tidy. Demonstrates that you
+    // can freely mix C# types inside a @code block.
+    private record Demo(string Title, string Summary, string Href, string File);
+
+    private readonly Demo[] demos =
+    [
+        new("Counter", "Event handling + private state.",
+            "/counter", "Pages/Counter.razor"),
+        new("Parameters & child content", "Reusable components, [Parameter], RenderFragment, EventCallback.",
+            "/parameters", "Pages/ParametersDemo.razor"),
+        new("Data binding", "One-way, two-way (@bind) and @bind:event.",
+            "/binding", "Pages/DataBindingDemo.razor"),
+        new("Forms & validation", "EditForm + DataAnnotationsValidator.",
+            "/forms", "Pages/FormsDemo.razor"),
+        new("Lifecycle", "OnInitialized, OnParametersSet, OnAfterRender, Dispose.",
+            "/lifecycle", "Pages/LifecycleDemo.razor"),
+        new("Routing", "@page, route parameters and NavigationManager.",
+            "/greet/world", "Pages/RoutingDemo.razor"),
+        new("Dependency injection", "@inject, service lifetimes.",
+            "/di", "Pages/DependencyInjectionDemo.razor"),
+        new("Cascading values", "Share data down a subtree without prop-drilling.",
+            "/cascading", "Pages/CascadingDemo.razor"),
+        new("JavaScript interop", "Calling JS from C# and vice versa.",
+            "/jsinterop", "Pages/JsInteropDemo.razor"),
+        new("App state service", "Share state between unrelated components.",
+            "/state", "Pages/StateDemo.razor"),
+        new("Code-behind", "Splitting markup (.razor) and logic (.razor.cs).",
+            "/codebehind", "Pages/CodeBehindDemo.razor"),
+        new("Weather (streaming)", "Async data + [StreamRendering].",
+            "/weather", "Pages/Weather.razor"),
+    ];
+}
