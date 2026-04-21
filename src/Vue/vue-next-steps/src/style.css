@@ -1,0 +1,122 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.app-header {
+  border-bottom: 1px solid #3a3a3a;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0 1rem;
+}
+
+nav a {
+  color: #9ecbff;
+  text-decoration: none;
+}
+
+nav a.router-link-active {
+  color: #fff;
+  border-bottom: 2px solid #646cff;
+}
+
+main {
+  min-height: 50vh;
+}
+
+.app-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #3a3a3a;
+  color: #888;
+}
+
+.meta {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.task-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.task-form input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1a1a1a;
+  color: inherit;
+}
+
+button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #1a1a1a;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: #646cff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #2f2f2f;
+}
+
+.task-item.done a {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.task-item a {
+  flex: 1;
+  color: #9ecbff;
+  text-decoration: none;
+}
+
+.task-item .remove {
+  background: transparent;
+  color: #d66;
+}
